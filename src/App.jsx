@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import logo from './assets/react.svg';
+import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './App.module.css';
+import axios from 'axios';
 
-function App() {
-  const [count, setCount] = useState(0)
+const baseURL = import.meta.env.VITE_PWL_BACKEND_URL;
+
+const App = () => {
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/" element={<DefaultPage />} />
+        <Route path="/user" element={<LoggedInPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
-export default App
+// eslint-disable-next-line react/prop-types
+const DefaultPage = () => {
+
+  return (
+    <div>  
+      <h1>Welcome! Please log in to continue.</h1>
+      <a className="passwordless" href={baseURL+'/auth/login'}>Login With Passwordless</a>
+    </div>
+  );
+};
+
+// eslint-disable-next-line react/prop-types
+const LoggedInPage = (props) => {
+  console.log("DATA", props);
+  // const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      axios.get(baseURL+'/user').then((response) => {
+        console.log(response);
+        // setUser(response)
+      })
+    }
+  }, []);
+  
+  // console.log("DATA", JSON.stringify(data,null,4) );
+  return (
+    <div>
+      <h1>Welcome, user! </h1>
+      <div id="logout">
+        <form action={baseURL+'/auth/logout'}>
+          <input id ="button" type="submit" value="Logout" />
+        </form>
+       </div>
+    </div>
+  );
+};
+
+export default App;
